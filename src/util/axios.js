@@ -1,14 +1,25 @@
+import _ from 'lodash';
 import { create } from 'axios';
 import { Message } from 'element-ui';
+import { getStorage } from './common'
 import Config from './config.js';
 const api = create({
     baseURL: Config.host,
     timeout: 30000,
 });
 
+
+
 api.interceptors.request.use(
     request => {
         // 请求
+        const userId = _.get(getStorage('user'),'_id');
+    
+        if(userId){
+            request.headers = {
+                user:userId
+            }
+        }
         return request;
     },
     error => {

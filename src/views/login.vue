@@ -16,6 +16,8 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
+import { setStorage } from '../util/common.js';
+
 export default {
   name: 'userIndexComp',
   data () {
@@ -50,7 +52,6 @@ export default {
         });
         return
       }
-      console.log('here')
       this.login()
     },
     async login () {
@@ -58,10 +59,16 @@ export default {
         username: this.username,
         password: this.password
       })
+
       if(data){
-        console.log('login res', data)
+
         this.userInfo = data.user;
+
+        setStorage('user',data.user)
         this.setUser(data.user);
+        this.$router.replace({
+          name: 'mall'
+        });
       }
     }
   },

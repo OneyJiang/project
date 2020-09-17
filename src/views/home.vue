@@ -19,6 +19,8 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
+import _ from 'lodash';
+import { getStorage } from '../util/common';
 export default {
   name: "Home",
   data() {
@@ -40,7 +42,12 @@ export default {
       'clearUser', 'updateLoginState'
     ]),
     async getUserInfo () {
-      const data = await this.yGet('/user/userinfo')
+
+      const data = await this.yGet('/user/userinfo',{
+        params: {
+          id: _.get(getStorage('user'),'_id')
+        }
+      })
       console.log('user info data', data);
     },
     /** 退出 */
