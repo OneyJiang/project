@@ -34,26 +34,25 @@ export default {
   },
   mounted() {
     this.getList();
+
+    // this.change({id:'5f558c8b0f6bd110655503ed'})
   },
   methods: {
     async getList () {
       let res = await this.yGet('shop/shopList')
       if(res){
-        console.log('res', res)
+        
         this.list = res.list;
       }
     },
     async change (data) {
-      const res = await this.yGet('shop/exchange', {
-        params: {
+     
+      const res = await this.yPut('shop/exchange', {
+    
           id: data.id,
-          uid: this.user.id
-        }
+        
       });
-      if (res) {
-        console.log('res', res);
-        this.list = data.list;
-      }
+      console.log(res);
     }
   }
 }

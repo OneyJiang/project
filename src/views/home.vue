@@ -20,7 +20,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import _ from 'lodash';
-import { getStorage } from '../util/common';
+import { getStorage, removeStorage} from '../util/common';
 export default {
   name: "Home",
   data() {
@@ -36,6 +36,10 @@ export default {
   },
   created() {
     this.getUserInfo();
+
+    // this.getExchangedRecord();
+
+    this.changePassword();
   },
   methods: {
     ...mapMutations([
@@ -43,25 +47,44 @@ export default {
     ]),
     async getUserInfo () {
 
-      const data = await this.yGet('/user/userinfo',{
+      await this.yGet('/user/userinfo',{
         params: {
           id: _.get(getStorage('user'),'_id')
         }
       })
-      console.log('user info data', data);
+    },
+
+    // 兑换记录
+    async getExchangedRecord () {
+      let res = await this.yGet('shop/exchangedRecord',{
+        params:{
+          id: _.get(getStorage('user'),'_id')
+        }
+      })
+      console.log(res);
+    },
+
+    // 修改密码
+    async changePassword () {
+     
+      const res = await this.yPut('user/changePassword', {
+    
+          oldPassword: 'banyuan123',
+          newPassword:'banyuan223'
+        
+      });
+      console.log(res);
     },
     /** 退出 */
     async quit () {
-      const data = await this.yPost('quit', {
-        id: this.user.id
-      })
-      if (data) {
+     
         this.clearUser()
         this.updateLoginState(false);
+       removeStorage('user')
         this.$router.replace({
           name: 'login'
         });
-      }
+      
     }
   },
 };

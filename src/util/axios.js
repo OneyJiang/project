@@ -29,7 +29,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     response => {
         // 返回的数据
-        console.info(response.config.method.toUpperCase() + ' 方式获得的数据', response);
+        // console.info(response.config.method.toUpperCase() + ' 方式获得的数据', response);
         return response;
     },
     error => {
@@ -45,9 +45,9 @@ api.interceptors.response.use(
             // this.$router.push({ name: 'login' });
 
         }
-        console.log('error');
+       
         console.log(error);
-        console.log(JSON.stringify(error));
+
         return Promise.reject(error);
     },
 );
@@ -80,6 +80,20 @@ export const get = async (url, data) => {
     return responseHandler(response);
 }
 
+/**
+ * @description 发起put请求
+ * @param {*} url 服务地址
+ * @param {*} data post的数据
+ */
+export const put = async (url, data) => {
+    const response = await api.put(url, data).catch(
+        (error) => {
+            errorHandler(error);
+        }
+    );
+    return responseHandler(response);
+}
+
 // 处理错误
 const errorHandler = (error) => {
   if (error && error.message) {
@@ -91,14 +105,14 @@ const errorHandler = (error) => {
 
 // 处理正确返回
 const responseHandler = (response) => {
-  console.log('axios--------->', response)
+
   if (response && response.status == 200) {
     if (!response.data) {
       return {}
     }
     return response.data
   } else {
-    console.log('response', response)
+    // console.log('response', response)
       Message({message: response.data.message, type: 'error'});
   }
   // if (response&& response.success) {

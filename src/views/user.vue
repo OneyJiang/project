@@ -29,6 +29,8 @@
 <script>
 import userInfo from '../components/userInfo'
 import changeRecord from '../components/changeRecord'
+
+
 export default {
   name: 'userIndex',
   components: { userInfo, changeRecord },
@@ -43,7 +45,7 @@ export default {
   methods: {
     changeTab (ind) {
       this.index = ind;
-    }
+    },
   },
 }
 </script>
