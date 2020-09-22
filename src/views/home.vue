@@ -4,6 +4,7 @@
             <div class="user-info">
                 <img :src="avatar" class="user-avatar" alt="">
                 <p>阿扎西</p>
+                <p>{{ $route.name }}</p>
             </div>
             <ul>
               <li> <router-link to="/mall" class="router-link"> 积分商城</router-link></li>
@@ -39,12 +40,22 @@ export default {
 
     // this.getExchangedRecord();
 
-    this.changePassword();
+    // this.changePassword();
+
+    // this.getShopList();
+
+    // this.insertShopItem();
+
+    // this.updateShopItem();
+
+    // this.deleteShopItem();
   },
   methods: {
     ...mapMutations([
       'clearUser', 'updateLoginState'
     ]),
+
+    // 获取用户信息
     async getUserInfo () {
 
       await this.yGet('/user/userinfo',{
@@ -74,6 +85,38 @@ export default {
         
       });
       console.log(res);
+    },
+
+    // admin 获取商品列表
+    async getShopList () {
+
+      await this.yGet('/admin/shopList',{})
+    },
+
+    // admin 加入商品
+    async insertShopItem(){
+      await this.yPost('/admin/shopItem',{
+        name:'测试商品',
+        price:100
+      })
+    },
+
+    // admin 更新商品
+    async updateShopItem(){
+      await this.yPut('/admin/shopItem',{
+        data:{
+          _id:'5f69599d0023164a8b9f3ee2',
+          name:'测试商品',
+          price:10
+        }
+      })
+    },
+
+    // admin 删除商品
+    async deleteShopItem(){
+      await this.yDel('/admin/shopItem',{
+        id:'5f69599d0023164a8b9f3ee2'
+      })
     },
     /** 退出 */
     async quit () {

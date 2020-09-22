@@ -8,10 +8,11 @@ Vue.use(ElementUI);
 
 Vue.config.productionTip = false
 
-import { get, post,put } from './util/axios'
+import { get, post,put,del } from './util/axios'
 Vue.prototype.yGet = get
 Vue.prototype.yPost = post
 Vue.prototype.yPut = put
+Vue.prototype.yDel = del
 
 new Vue({
   router,

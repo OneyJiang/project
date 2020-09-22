@@ -83,7 +83,7 @@ export const get = async (url, data) => {
 /**
  * @description 发起put请求
  * @param {*} url 服务地址
- * @param {*} data post的数据
+ * @param {*} data put的数据
  */
 export const put = async (url, data) => {
     const response = await api.put(url, data).catch(
@@ -91,6 +91,29 @@ export const put = async (url, data) => {
             errorHandler(error);
         }
     );
+    return responseHandler(response);
+}
+
+
+/**
+ * @description 发起delete请求
+ * @param {*} url 服务地址
+ * @param {*} data delete的数据
+ */
+export const del = async (url, data) => {
+
+    // const response = await api.delete(url, data).catch(
+    //     (error) => {
+    //         errorHandler(error);
+    //     }
+    // );
+    // return responseHandler(response);
+
+    // axios 0.20版本最新bug，2020.8
+    // https://github.com/axios/axios/issues/3220
+    // https://github.com/axios/axios/pull/3282
+    const response = await api.request({data, url, method: 'delete'});
+
     return responseHandler(response);
 }
 
