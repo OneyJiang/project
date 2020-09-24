@@ -29,7 +29,7 @@
 <script>
 import userInfo from '../components/userInfo'
 import changeRecord from '../components/changeRecord'
-
+import { mapState } from 'vuex'
 
 export default {
   name: 'userIndex',
@@ -37,8 +37,12 @@ export default {
   data () {
     return {
       index: 1,
-      avatar: "https://by-image.oss-cn-shanghai.aliyuncs.com/images/159169228111094950.jpg",
     }
+  },
+  computed: {
+    ...mapState({
+      "user": state=>state.login.user
+    })
   },
   created() {
   },

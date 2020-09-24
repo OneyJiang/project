@@ -8,8 +8,9 @@ const api = create({
     timeout: 30000,
 });
 
+import router from '../router/index'
 
-
+console.log('//', router)
 api.interceptors.request.use(
     request => {
         // 请求
@@ -35,19 +36,14 @@ api.interceptors.response.use(
     error => {
         //拦截错误
         if (error.response.status === 401) {
-            //如果登录状态失效了
-            //清除本地缓存的to-ken
-            //清除本地缓存的isLogin avatar
-            localStorage.removeItem('isLogin');
-            localStorage.removeItem('user');
-            // 跳转到登录
-            // Message({message: '登录状态过期，请重新登录', type: 'warning'});
-            // this.$router.push({ name: 'login' });
+          //如果登录状态失效了
+          //清除本地缓存的to-ken
+          //清除本地缓存的isLogin avatar
+          localStorage.removeItem('isLogin');
+          localStorage.removeItem('user');
+          location.href = `${window.location.protocol}//${window.location.host}/login`;
 
         }
-       
-        console.log(error);
-
         return Promise.reject(error);
     },
 );
@@ -87,7 +83,8 @@ export const get = async (url, data) => {
  */
 export const put = async (url, data) => {
     const response = await api.put(url, data).catch(
-        (error) => {
+      (error) => {
+        console.log('hahaha', error)
             errorHandler(error);
         }
     );
@@ -119,6 +116,7 @@ export const del = async (url, data) => {
 
 // 处理错误
 const errorHandler = (error) => {
+  console.log('error msg', error)
   if (error && error.message) {
     Message({ message: error.message, type: 'error' });
     return
@@ -135,8 +133,9 @@ const responseHandler = (response) => {
     }
     return response.data
   } else {
-    // console.log('response', response)
-      Message({message: response.data.message, type: 'error'});
+    console.log('error response', response)
+    let errorinfo = response&&response.data&&response.data.message || '接口错误'
+      Message({message: errorinfo, type: 'error'});
   }
   // if (response&& response.success) {
   //   console.log('axios--------->', response)

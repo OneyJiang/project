@@ -1,39 +1,39 @@
 <template>
-    <div class="home">
-        <div class="slide-main">
-            <div class="user-info">
-                <img :src="avatar" class="user-avatar" alt="">
-                <p>阿扎西</p>
-                <p>{{ $route.name }}</p>
-            </div>
-            <ul>
-              <li> <router-link to="/mall" class="router-link"> 积分商城</router-link></li>
-              <li> <router-link to="/user" class="router-link"> 个人中心</router-link></li>
-              <li @click="quit">退出</li>
-            </ul>
-        </div>
-        <div class="home-right">
-          <router-view></router-view>
-        </div>
+  <div class="home">
+    <div class="slide-main">
+      <div class="user-info">
+        <img :src="user.avatar" class="user-avatar" alt />
+        <p>{{ user.nickname }}</p>
+      </div>
+      <ul>
+        <li>
+          <router-link to="/mall" class="router-link">积分商城</router-link>
+        </li>
+        <li>
+          <router-link to="/user" class="router-link">个人中心</router-link>
+        </li>
+        <li @click="quit">退出</li>
+      </ul>
     </div>
+    <div class="home-right">
+      <router-view></router-view>
+    </div>
+  </div>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
-import _ from 'lodash';
-import { getStorage, removeStorage} from '../util/common';
+import { mapState, mapActions } from "vuex";
+import _ from "lodash";
+import { getStorage } from "../util/common";
 export default {
   name: "Home",
   data() {
-    return {
-      title: "首页",
-      avatar: "https://by-image.oss-cn-shanghai.aliyuncs.com/images/159169228111094950.jpg",
-    };
+    return {};
   },
   computed: {
     ...mapState({
-      'isLogin': state => state.login.isLogin
-    })
+      user: (state) => state.login.user,
+    }),
   },
   created() {
     this.getUserInfo();
@@ -51,84 +51,75 @@ export default {
     // this.deleteShopItem();
   },
   methods: {
-    ...mapMutations([
-      'clearUser', 'updateLoginState'
-    ]),
+    ...mapActions(["logout"]),
 
     // 获取用户信息
-    async getUserInfo () {
-
-      await this.yGet('/user/userinfo',{
+    async getUserInfo() {
+      await this.yGet("/user/userinfo", {
         params: {
-          id: _.get(getStorage('user'),'_id')
-        }
-      })
+          id: _.get(getStorage("user"), "_id"),
+        },
+      });
     },
 
     // 兑换记录
-    async getExchangedRecord () {
-      let res = await this.yGet('shop/exchangedRecord',{
-        params:{
-          id: _.get(getStorage('user'),'_id')
-        }
-      })
-      console.log(res);
-    },
+    // async getExchangedRecord () {
+    //   let res = await this.yGet('shop/exchangedRecord',{
+    //     params:{
+    //       id: _.get(getStorage('user'),'_id')
+    //     }
+    //   })
+    //   console.log(res);
+    // },
 
     // 修改密码
-    async changePassword () {
-     
-      const res = await this.yPut('user/changePassword', {
-    
-          oldPassword: 'banyuan123',
-          newPassword:'banyuan223'
-        
+    async changePassword() {
+      const res = await this.yPut("user/changePassword", {
+        oldPassword: "banyuan123",
+        newPassword: "banyuan223",
       });
       console.log(res);
     },
 
     // admin 获取商品列表
-    async getShopList () {
-
-      await this.yGet('/admin/shopList',{})
+    async getShopList() {
+      await this.yGet("/admin/shopList", {});
     },
 
     // admin 加入商品
-    async insertShopItem(){
-      await this.yPost('/admin/shopItem',{
-        name:'测试商品',
-        price:100
-      })
+    async insertShopItem() {
+      await this.yPost("/admin/shopItem", {
+        name: "测试商品",
+        price: 100,
+      });
     },
 
     // admin 更新商品
-    async updateShopItem(){
-      await this.yPut('/admin/shopItem',{
-        data:{
-          _id:'5f69599d0023164a8b9f3ee2',
-          name:'测试商品',
-          price:10
-        }
-      })
+    async updateShopItem() {
+      await this.yPut("/admin/shopItem", {
+        data: {
+          _id: "5f69599d0023164a8b9f3ee2",
+          name: "测试商品",
+          price: 10,
+        },
+      });
     },
 
     // admin 删除商品
-    async deleteShopItem(){
-      await this.yDel('/admin/shopItem',{
-        id:'5f69599d0023164a8b9f3ee2'
-      })
+    async deleteShopItem() {
+      await this.yDel("/admin/shopItem", {
+        id: "5f69599d0023164a8b9f3ee2",
+      });
     },
+
     /** 退出 */
-    async quit () {
-     
-        this.clearUser()
-        this.updateLoginState(false);
-       removeStorage('user')
-        this.$router.replace({
-          name: 'login'
-        });
-      
+    async quit() {
+      this.logout();
+      this.$router.replace({
+        name: "login",
+      });
     }
+
   },
 };
 </script>
@@ -157,23 +148,23 @@ export default {
       border-radius: 50%;
       overflow: hidden;
     }
-    p{
+    p {
       font-size: 14px;
       color: #fff;
       font-weight: bold;
       padding: 20px 0;
     }
   }
-  ul{
+  ul {
     margin-top: 20px;
-    li{
+    li {
       font-size: 16px;
       color: #fff;
       font-weight: bold;
       line-height: 50px;
       height: 50px;
       cursor: pointer;
-      .router-link{
+      .router-link {
         font-size: 16px;
         color: #fff;
         width: 100%;
@@ -183,7 +174,7 @@ export default {
     }
   }
 }
-.home-right{
+.home-right {
   display: inline-block;
   vertical-align: top;
   height: 100%;

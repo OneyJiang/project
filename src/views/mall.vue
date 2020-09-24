@@ -5,13 +5,13 @@
     </div>
     <div class="my-integral">
       <h2>当前积分</h2>
-      <h3>19999933</h3>
+      <h3>{{ user.integration }}</h3>
     </div>
     <div class="pro-main">
       <h1>商品列表</h1>
       <div class="pro-list">
-        <div class="pro-item" v-for="(item, index) in list" :key="'pro'+index">
-          <pro-item :item="item" @change="change"></pro-item>
+        <div class="pro-item" v-for="item in list" :key="item._id">
+          <pro-item :item="item" @exchange="change"></pro-item>
         </div>
         
       </div>
@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex"
 import proItem from '../components/pro-item'
 export default {
   name: 'mall',
@@ -32,27 +33,37 @@ export default {
 
     }
   },
+  computed: {
+    ...mapState({
+      "user": state=>state.login.user
+    })
+  },
   mounted() {
     this.getList();
-
-    // this.change({id:'5f558c8b0f6bd110655503ed'})
   },
   methods: {
+    ...mapActions(['setUser']),
     async getList () {
       let res = await this.yGet('shop/shopList')
       if(res){
-        
-        this.list = res.list;
+        console.log('res', res);
+        this.list = res;
       }
     },
     async change (data) {
-     
-      const res = await this.yPut('shop/exchange', {
-    
-          id: data.id,
-        
-      });
-      console.log(res);
+      console.log('exchange', data);
+      // const res = await this.yPut('shop/exchange', {
+      //     id: data.item._id,
+      // });
+      // console.log(res);
+      // if (res) {
+      //   this.$message({
+      //     message: '恭喜你，兑换成功',
+      //     type: 'success',
+      //     offset: '150'
+      //   });
+      // }
+      this.setUser('getUserInfo');
     }
   }
 }
@@ -99,7 +110,7 @@ export default {
       font-weight: bold;
     }
     h3{
-      font-size: 30px;
+      font-size: 50px;
       color: #fff;
       font-weight: bold;
     }

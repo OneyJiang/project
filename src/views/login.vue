@@ -15,8 +15,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
-import { setStorage } from '../util/common.js';
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'userIndexComp',
@@ -34,7 +33,7 @@ export default {
     })
   },
   methods: {
-    ...mapMutations([
+    ...mapActions([
       'updateLoginState', 'setUser'
     ]),
     check () {
@@ -59,15 +58,14 @@ export default {
         username: this.username,
         password: this.password
       })
+      console.log("login data", data);
 
-      if(data){
-
+      if(data&& data.success){
         this.userInfo = data.user;
-
-        setStorage('user',data.user)
-        this.setUser(data.user);
-        this.$router.replace({
-          name: 'mall'
+        this.updateLoginState(true); // 更改用户登录状态
+        this.setUser(data.user); // 存储用户信息
+        this.$router.replace({  // 跳转到个人中心
+          name: 'user'
         });
       }
     }

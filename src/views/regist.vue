@@ -6,16 +6,19 @@
       </div>
       <div class="regist-right">
         <h1>注册新用户</h1>
-        <input type="text" v-model="username" placeholder="用户名：6位以上数字和密码组成">
-        <input type="password" v-model="password" placeholder="密码">
+        <input type="text" name="ssss" placeholder="用户名：6位以上数字和密码组成">
+        <input type="password" v-model="password" placeholder="密码" autocomplete="off">
         <input type="text" v-model="school" placeholder="学校">
         <input type="text" v-model="nickname" placeholder="昵称">
         <input type="number" v-model="age" placeholder="请输入年龄">
-        <select name="" id="">
-          <option value="0">女</option>
-          <option value="1">男</option>
-        </select>
-        xingbie: 女
+        <el-select v-model="gender" placeholder="请选择性别">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
         <button @click="isEmpty">注册</button>
       </div>
     </div>
@@ -32,7 +35,11 @@ export default {
       school: '', // 学校
       nickname: '', // 昵称
       age: '', // 签名
-      sex: 0, // 0：女   1：男
+      gender: 1, // 0：女   1：男  默认男
+      options: [
+        { value: 1, label: '男' },
+        { value: 0, label: '女' }
+      ],
       loginPic: 'https://by-image.oss-cn-shanghai.aliyuncs.com/yfront/static/auth/pic_denglu_wode.png'
     }
   },
@@ -104,7 +111,7 @@ export default {
         school: this.school,
         nickname: this.nickname,
         age: this.age,
-        gender: 0
+        gender: this.gender
       }
       const data = await this.yPost('user/regist', params)
       console.log('data', data);
