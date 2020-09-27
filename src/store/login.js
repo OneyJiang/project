@@ -1,4 +1,3 @@
-// import { setStorage, getStorage, removeStorage } from '../util/common'
 import * as types from "./mutations-type"
 import { get } from '../util/axios'
 
@@ -15,30 +14,40 @@ const login = {
       }
     },
     actions: {
-        async setUser({ state, commit }, value) {
-          let userInfo = {};
-          if (typeof value === 'string' && value == 'getUserInfo') {
-            const res = await get('/user/userinfo', {
-              params: {
-                  id: state.user._id
-              }
-            });
-            if (res) {
-              console.log('用户', res);
-              localStorage.setItem('user', JSON.stringify(res))
-              userInfo = JSON.parse(JSON.stringify(res));
+      async setUser({ state, commit }, value) {
+        /*
+         * 如果参数是字符串类型，并且值为getUserInfo 我们就认为 需要重新请求用户信息
+         * 否则判断value是否是对象类型，是对象类型则直接赋值
+        */ 
+        if (typeof value === 'string' && value == 'getUserInfo') {
+          const res = await get('/user/userinfo', {
+            params: {
+              id: state.user._id
             }
-          } else {
-            userInfo = value
+          });
+
+          if (res && JSON.stringify(res) !== '{}') {
+
+            localStorage.setItem('user', JSON.stringify(res))
+
+            let userInfo = JSON.parse(JSON.stringify(res));
+
+            commit(types.SET_USER_INFO, userInfo); // 提交mutation
+
           }
-          localStorage.setItem('user', JSON.stringify(userInfo))
-          commit(types.SET_USER_INFO, userInfo); // 提交mutation
-        },
-        logout({ commit }) {
-          // removeStorage('user');
-          localStorage.removeItem('user')
-          commit(types.CLEAR_USER);
+        } else if (typeof value === 'object') {
+
+          localStorage.setItem('user', JSON.stringify(value))
+
+          commit(types.SET_USER_INFO, value); // 提交mutation
+
         }
+      },
+      logout({ commit }) {
+        // removeStorage('user');
+        localStorage.removeItem('user')
+        commit(types.CLEAR_USER);
+      }
     }
 }
 export default login

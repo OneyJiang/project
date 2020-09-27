@@ -1,7 +1,5 @@
-import _ from 'lodash';
 import { create } from 'axios';
 import { Message } from 'element-ui';
-import { getStorage } from './common'
 import Config from './config.js';
 const api = create({
   baseURL: Config.host,
@@ -11,9 +9,9 @@ const api = create({
 api.interceptors.request.use(
   request => {
     // 请求
-    const userId = _.get(getStorage('user'), '_id');
-    if (userId) {
-      request.headers["user"] = userId
+    const user = JSON.parse(localStorage.getItem("user")) || {};
+    if (user&&user._id) {
+      request.headers["user"] = user._id
     }
     return request;
   },

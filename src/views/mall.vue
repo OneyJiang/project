@@ -5,8 +5,7 @@
     </div>
     <div class="my-integral">
       <h2>当前积分</h2>
-      <!-- <h3>{{ user.integration }}</h3> -->
-      <h3>{{ jifen }}</h3>
+      <h3>{{ user.integration }}</h3>
     </div>
     <div class="pro-main">
       <h1>商品列表</h1>
@@ -35,19 +34,8 @@ export default {
   },
   computed: {
     ...mapState({
-      // "user": state => state.login.user,
-      "jifen": state => state.login.user.integration
+      "user": state => state.login.user
     })
-  },
-  watch: {
-    jifen: {
-      handler(newV) {
-        console.log('user值', newV);
-        console.log('user值', newV.integration);
-      },
-      deep: true,
-      immediate: true
-    }
   },
   mounted() {
     this.getList();
@@ -57,7 +45,6 @@ export default {
     async getList () {
       let res = await this.yGet('shop/shopList')
       if(res){
-        console.log('res', res);
         this.list = res;
       }
     },
@@ -65,12 +52,12 @@ export default {
       const res = await this.yPut('shop/exchange', {
           id: data.item._id,
       });
-      console.log(res);
       if (res) {
         this.setUser('getUserInfo');
         this.$message({
           message: '恭喜你，兑换成功',
           type: 'success',
+          duration: 1000,
           offset: '150'
         })
       }

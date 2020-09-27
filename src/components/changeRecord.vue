@@ -46,7 +46,6 @@ export default {
         }
       })
       if(res){
-        console.log('data', res)
         this.list = res;
       }
     },

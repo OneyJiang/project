@@ -25,16 +25,16 @@
       </div>
     </div>
 
-    <el-dialog title="修改密码" :visible.sync="isShowPassworkModel">
+    <el-dialog title="修改密码" :visible.sync="isShowPassworkModel" @close="closeModel">
       <el-form :rules="rules" ref="dataForm" :model="form" label-width="120px">
         <el-form-item label="旧密码" prop="oldPassword">
-          <el-input v-model="form.oldPassword"></el-input>
+          <el-input type="password" v-model="form.oldPassword"></el-input>
         </el-form-item>
         <el-form-item label="新密码" prop="newPassword">
-          <el-input v-model="form.newPassword"></el-input>
+          <el-input type="password" v-model="form.newPassword"></el-input>
         </el-form-item>
         <el-form-item label="再次输入新密码">
-          <el-input v-model="newPassword"></el-input>
+          <el-input type="password" v-model="newPassword"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSave">保存</el-button>
@@ -53,10 +53,10 @@ export default {
     return {
       isShowPassworkModel: false, // 密码修改框显隐
       form: {
-        oldPassword :'bmbmbm',
-        newPassword: 'bjbjbj'
+        oldPassword :'',
+        newPassword: ''
       },
-      newPassword: 'bjbjbj',
+      newPassword: '',
       rules: {
         oldPassword: [
           { required: true, message: '请输入旧密码', trigger: 'blur' }
@@ -75,40 +75,40 @@ export default {
   methods: {
     toogleModel (bool) {
       this.isShowPassworkModel = bool;
-      if(bool) {
-        this.dialogFormVisible = true // 显示编辑信息弹框
-        this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
-        })
-      }
+    },
+    closeModel () {
+      this.$nextTick(() => {
+        this.form = {};
+        this.newPassword = ''
+        this.$refs.dataForm.clearValidate()
+      })
     },
     onSave () {
-      this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            if(this.form.newPassword !== this.newPassword) {
-                this.$message({
-                  message: '两次新密码不一致哦',
-                  type: 'warning',
-                  offset: 120
-                });
-                return
-            }
-            this.changePassword();
-          } else {
-            console.log('error submit!!');
-            return false;
+      this.$refs.dataForm.validate((valid) => {
+        if (valid) {
+          if(this.form.newPassword !== this.newPassword) {
+            this.$message({
+              message: '两次新密码不一致!',
+              type: 'warning',
+              offset: 120
+            });
+            return
           }
+          this.changePassword();
+        } else {
+          return false;
+        }
       });
     },
     async changePassword () {
       const res = await this.yPut('/user/changePassword', this.form)
       if(res&&res.success) {
-        console.log('res', res);
         this.$message({
           message: '密码修改成功！',
           type: 'warning',
           offset: 120
         });
+        this.toogleModel(false);
       }
     }
   },
