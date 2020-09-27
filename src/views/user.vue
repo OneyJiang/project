@@ -49,7 +49,7 @@ export default {
   methods: {
     changeTab (ind) {
       this.index = ind;
-    },
+    }
   },
 }
 </script>
@@ -95,6 +95,8 @@ export default {
       height: 500px;
       border: solid 1px #f3f3f3;
       padding: 50px 90px;
+      box-shadow: 0 2px 12px #c5c5c5;
+      overflow-y: scroll;
     }
   }
 }

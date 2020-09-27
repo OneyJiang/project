@@ -4,7 +4,6 @@
       <div v-for="item in list" :key="JSON.stringify(item)" class="tab2-item">
         <h2>{{ item.name }}</h2>
         <h3>{{ item.exchangeDate | formatTime }}</h3>
-        <h3>{{ item._id }}</h3>
       </div>
     </div>
   </div>
@@ -12,6 +11,7 @@
 
 <script>
 import Moment from "moment"
+import { mapState } from "vuex"
 export default {
   name: 'userIndexComp',
   props: {
@@ -30,12 +30,21 @@ export default {
       list: [],
     }
   },
+  computed: {
+    ...mapState({
+      'user': state=>state.login.user
+    })
+  },
   mounted() {
     this.getChangeRecord();
   },
   methods: {
     async getChangeRecord () {
-      const res = await this.yGet('shop/exchangedRecord')
+      const res = await this.yGet('shop/exchangedRecord', {
+        params: {
+          id: this.user._id
+        }
+      })
       if(res){
         console.log('data', res)
         this.list = res;

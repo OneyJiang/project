@@ -4,48 +4,40 @@ import { Message } from 'element-ui';
 import { getStorage } from './common'
 import Config from './config.js';
 const api = create({
-    baseURL: Config.host,
-    timeout: 30000,
+  baseURL: Config.host,
+  timeout: 30000,
 });
 
-import router from '../router/index'
-
-console.log('//', router)
 api.interceptors.request.use(
-    request => {
-        // 请求
-        const userId = _.get(getStorage('user'),'_id');
-    
-        if(userId){
-            request.headers = {
-                user:userId
-            }
-        }
-        return request;
-    },
-    error => {
-        return Promise.reject(error);
-    },
+  request => {
+    // 请求
+    const userId = _.get(getStorage('user'), '_id');
+    if (userId) {
+      request.headers["user"] = userId
+    }
+    return request;
+  },
+  error => {
+    return Promise.reject(error);
+  },
 );
 api.interceptors.response.use(
-    response => {
-        // 返回的数据
-        // console.info(response.config.method.toUpperCase() + ' 方式获得的数据', response);
-        return response;
-    },
-    error => {
-        //拦截错误
-        if (error.response.status === 401) {
-          //如果登录状态失效了
-          //清除本地缓存的to-ken
-          //清除本地缓存的isLogin avatar
-          localStorage.removeItem('isLogin');
-          localStorage.removeItem('user');
-          location.href = `${window.location.protocol}//${window.location.host}/login`;
-
-        }
-        return Promise.reject(error);
-    },
+  response => {
+    // 返回的数据
+    return response;
+  },
+  error => {
+    //拦截错误
+    if (error.response.status === 401) {
+      //如果登录状态失效了
+      //清除本地缓存的信息
+      localStorage.removeItem('user');
+      location.href = `${window.location.protocol}//${window.location.host}/login`;
+    } else if (error.response.data&&error.response.data.code === 'auth-failed') {
+      location.href = `${window.location.protocol}//${window.location.host}/login`;
+    }
+    return Promise.reject(error);
+  },
 );
 
 /**
@@ -54,12 +46,12 @@ api.interceptors.response.use(
  * @param {*} data post的数据
  */
 export const post = async (url, data) => {
-    const response = await api.post(url, data).catch(
-        (error) => {
-            errorHandler(error);
-        }
-    );
-    return responseHandler(response);
+  const response = await api.post(url, data).catch(
+    (error) => {
+      errorHandler(error);
+    }
+  );
+  return responseHandler(response);
 }
 
 /**
@@ -68,12 +60,12 @@ export const post = async (url, data) => {
  * @param {*} data get时带的数据
  */
 export const get = async (url, data) => {
-    const response = await api.get(url, data).catch(
-        (error) => {
-            errorHandler(error);
-        }
-    );
-    return responseHandler(response);
+  const response = await api.get(url, data).catch(
+    (error) => {
+      errorHandler(error);
+    }
+  );
+  return responseHandler(response);
 }
 
 /**
@@ -82,13 +74,12 @@ export const get = async (url, data) => {
  * @param {*} data put的数据
  */
 export const put = async (url, data) => {
-    const response = await api.put(url, data).catch(
-      (error) => {
-        console.log('hahaha', error)
-            errorHandler(error);
-        }
-    );
-    return responseHandler(response);
+  const response = await api.put(url, data).catch(
+    (error) => {
+      errorHandler(error);
+    }
+  );
+  return responseHandler(response);
 }
 
 
@@ -98,58 +89,31 @@ export const put = async (url, data) => {
  * @param {*} data delete的数据
  */
 export const del = async (url, data) => {
-
-    // const response = await api.delete(url, data).catch(
-    //     (error) => {
-    //         errorHandler(error);
-    //     }
-    // );
-    // return responseHandler(response);
-
-    // axios 0.20版本最新bug，2020.8
-    // https://github.com/axios/axios/issues/3220
-    // https://github.com/axios/axios/pull/3282
-    const response = await api.request({data, url, method: 'delete'});
-
-    return responseHandler(response);
+  // axios 0.20版本最新bug，2020.8
+  // https://github.com/axios/axios/issues/3220
+  // https://github.com/axios/axios/pull/3282
+  const response = await api.request({ data, url, method: 'delete'});
+  return responseHandler(response);
 }
 
 // 处理错误
 const errorHandler = (error) => {
-  console.log('error msg', error)
-  if (error && error.message) {
-    Message({ message: error.message, type: 'error' });
-    return
-  }
-  Message({ message: '请求发生错误，请重试', type: 'error' }); 
+  let msg = error&&error.response&&error.response.data&&error.response.data.message || '请求发生错误，请重试'
+  // let msg = error.response.data.message || '请求发生错误，请重试'
+  Message({
+    message: msg,
+    type: 'error',
+    offset: 120
+  });
 }
 
 // 处理正确返回
 const responseHandler = (response) => {
-
   if (response && response.status == 200) {
     if (!response.data) {
       return {}
     }
     return response.data
-  } else {
-    console.log('error response', response)
-    let errorinfo = response&&response.data&&response.data.message || '接口错误'
-      Message({message: errorinfo, type: 'error'});
   }
-  // if (response&& response.success) {
-  //   console.log('axios--------->', response)
-  //   let returnData = response.data || {}
-  //   return returnData
-  // }
-  // // 逻辑错误
-  // return response.data
+  return null
 }
-
-/** get
- * this.yGet('api/api?id=' + id);
- */
-
-/** post
- * this.yPost('api/api', {id:id});
- */

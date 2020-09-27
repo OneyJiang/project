@@ -2,24 +2,41 @@
   <div class="regist-container">
     <div class="regist-warpper">
       <div class="regist-left">
-        <img :src="loginPic" alt="">
+        <img v-img-path="'auth/pic_denglu_wode.png'" alt="">
       </div>
       <div class="regist-right">
         <h1>注册新用户</h1>
-        <input type="text" name="ssss" placeholder="用户名：6位以上数字和密码组成">
-        <input type="password" v-model="password" placeholder="密码" autocomplete="off">
-        <input type="text" v-model="school" placeholder="学校">
-        <input type="text" v-model="nickname" placeholder="昵称">
-        <input type="number" v-model="age" placeholder="请输入年龄">
-        <el-select v-model="gender" placeholder="请选择性别">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-        <button @click="isEmpty">注册</button>
+        <el-form :model="registForm" :rules="rules" ref="rigist" label-width="0">
+          <el-form-item prop="username">
+            <el-input v-model="registForm.username" placeholder="请输入用户名"></el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input v-model="registForm.password" placeholder="请输入密码"></el-input>
+          </el-form-item>
+          <el-form-item prop="school">
+            <el-input v-model="registForm.school" placeholder="请输入学校"></el-input>
+          </el-form-item>
+          <el-form-item prop="nickname">
+            <el-input v-model="registForm.nickname" placeholder="请输入昵称"></el-input>
+          </el-form-item>
+          <el-form-item prop="age">
+            <el-input v-model.number="registForm.age"></el-input>
+          </el-form-item>
+          <el-form-item prop="gender">
+            <el-select v-model="registForm.gender" style="width: 100%;">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select> 
+          </el-form-item>
+        </el-form>
+        <div style="font-size: 14px;color: #999;">
+          已有账号？去<span @click="jumpPage('login')" style="color: #6963d0;">登录</span>
+        </div>
+        <button @click="checkData">注册</button>
       </div>
     </div>
   </div>
@@ -29,106 +46,107 @@
 export default {
   name: 'regist',
   data () {
+    let checkUserName = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入用户名'));
+      } else {
+        let reg = /^[0-9A-Za-z]+$/
+        if(reg.test(value)) {
+          callback();
+        } else {
+          callback(new Error('用户名只能英文+数字组合!!'))
+        }
+      }
+    };
+    let checkAge = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('年龄不能为空'));
+      }
+      if (!Number.isInteger(value)) {
+        callback(new Error('请输入数字值'));
+      } else {
+        if (value > 120) {
+          callback(new Error('年龄不超过120'));
+        } else {
+          callback();
+        }
+      }
+    };
     return {
-      username: '', // 用户名
-      password: '', // 密码
-      school: '', // 学校
-      nickname: '', // 昵称
-      age: '', // 签名
-      gender: 1, // 0：女   1：男  默认男
+      registForm: {
+        username: '', // 用户名
+        password: '', // 密码
+        school: '', // 学校
+        nickname: '', // 昵称
+        age: null, // 年龄
+        gender: 1, // 0：女   1：男  默认男
+      },
       options: [
         { value: 1, label: '男' },
         { value: 0, label: '女' }
       ],
-      loginPic: 'https://by-image.oss-cn-shanghai.aliyuncs.com/yfront/static/auth/pic_denglu_wode.png'
+      rules: {
+        username: [
+          { validator: checkUserName, trigger: 'blur' },
+        ],
+        age: [
+          { validator: checkAge, trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          {  min: 6, message: '密码最少6位！！！', trigger: 'blur' }
+        ],
+        school: [
+          { required: true, message: '请输入学校', trigger: 'blur' }
+        ],
+        nickname: [
+          { required: true, message: '请输入昵称', trigger: 'blur' }
+        ],
+        gender: [
+          { required: true, message: '请选择性别', trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
-    /** 是否含有中文 */
-    hasChinese (str) {
-      var reg = new RegExp("[\\u4E00-\\u9FFF]+","g");
-      if(reg.test(str)){
-        console.log("包含汉字！");
-        return true
-      } else {
-        console.log("不包含汉字！");
-        return false
-      }
-    },
-    // 验证密码
-    checkPassword (str) {
-      // 数字或大小写字母
-      
-      //  var reg=/^(\w){6,20}$/;  
-      //  if (!reg.exec(str)) return false
-      //  return true
-
-      if (str == null || str.length <6) {
-        this.showMsg('密码不能少于6位');
-        return false;
-      }
-      var reg1 = new RegExp(/^[0-9A-Za-z]+$/);
-      if (!reg1.test(str)) {
-        this.showMsg('密码只能使用英文或数字组合');
-        return false;
-      } else {
-        return true
-      }
-    },
+    // 验证数据
     checkData () {
-      if(this.hasChinese(this.username)){
-        this.showMsg('用户名不能包含汉字哦');
-        return
-      }
-      if(!this.checkPassword(this.password)){
-        return false
-      }
-      if(!this.hasChinese(this.school)){
-        return false
-      }
-      this.regist()
+      this.$refs.rigist.validate((valid) => {
+        if (valid) {
+          this.regist();
+        } else {
+          return false;
+        }
+      });
     },
-    isEmpty () {
-      if(this.username&&this.password&&this.school&&this.nickname&&this.age){
-        this.checkData();
-      } else {
-        this.$message({
-          message: '请完善您的信息，每一项都是必填',
-          type: 'warning'
-        });
+    // 注册
+    async regist () {
+      const data = await this.yPost('user/regist', this.registForm)
+      if (data) {
+        this.showMsg('恭喜您注册成功，2秒后跳转到登录页面');
+        setTimeout(()=>{
+          this.jumpPage('login')
+        }, 2000)
       }
     },
+    // 跳转页面
+    jumpPage(name) {
+      this.$router.replace({
+        name: name
+      })
+    },
+    // 显示弹框
     showMsg (msg) {
       this.$message({
         message: msg,
         type: 'warning'
       });
     },
-    async regist () {
-      let params = {
-        username: this.username,
-        password: this.password,
-        school: this.school,
-        nickname: this.nickname,
-        age: this.age,
-        gender: this.gender
-      }
-      const data = await this.yPost('user/regist', params)
-      console.log('data', data);
-      if (data) {
-        this.showMsg('恭喜您注册成功，2秒后跳转到登录页面');
-        setTimeout(()=>{
-          this.$router.push({
-            name: 'login'
-          })
-        }, 2000)
-      }
-    }
   },
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .regist-container{
   width: 100%;
   height: 100%;
@@ -143,6 +161,7 @@ export default {
     align-items: center;
     box-shadow: 2px 3px 7px #d8d8d8;
     border-radius: 8px;
+    padding: 20px 0;
     .regist-left{
       width: 500px;
       padding: 40px;
@@ -158,6 +177,7 @@ export default {
       h1{
         font-size: 24px;
         color: #333;
+        margin-bottom: 30px;
       }
       input {
         width: 300px;
@@ -191,4 +211,12 @@ export default {
     }
   }
 }
+</style>
+
+<style lang="scss">
+  .regist-container{
+    .el-form{
+      width: 300px;
+    }
+  }
 </style>

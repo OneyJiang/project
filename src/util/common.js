@@ -4,8 +4,12 @@
  * @param {String, ALL Type} key 键值名 data 存储数据
  */
 export function setStorage (key, data) {
-    if(!key) return
+  if (!key) return
+  if (typeof data == 'object') {
     localStorage.setItem(key, JSON.stringify(data))
+  } else {
+    localStorage.setItem(key, data)
+  }
 }
 
 /**
@@ -13,14 +17,15 @@ export function setStorage (key, data) {
  * @param {String} key 键值名
  */
 export function getStorage (key) {
-    if(!key) return
-    let res = localStorage.getItem(key);
-    try {
-
-        return JSON.parse(res)
-    } catch (err) {
-        return res
-    }
+  if(!key) return
+  let res = localStorage.getItem(key);
+  console.log('res', res);
+  console.log('res', typeof res);
+  if (res) {
+    return JSON.parse(res)
+  } else {
+    return false
+  }
 }
 
 /**

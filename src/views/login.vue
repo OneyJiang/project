@@ -2,12 +2,15 @@
   <div class="regist-container">
     <div class="regist-warpper">
       <div class="regist-left">
-        <img :src="loginPic" alt="">
+        <img v-img-path="'auth/pic_denglu_wode.png'" alt="">
       </div>
       <div class="regist-right">
         <h1>欢迎登录</h1>
         <input type="text" v-model="username" placeholder="请输入您的用户名">
-        <input type="text" v-model="password" placeholder="请输入您的密码">
+        <input type="password" v-model="password" placeholder="请输入您的密码">
+        <div style="font-size: 14px;color: #999;">
+          还没有账号？<span @click="jumpPage('regist')" style="color: #6963d0;">新用户注册</span>
+        </div>
         <button @click="check">登录</button>
       </div>
     </div>
@@ -23,32 +26,24 @@ export default {
     return {
       username: '',
       password: '',
-      loginPic: 'https://by-image.oss-cn-shanghai.aliyuncs.com/yfront/static/auth/pic_denglu_wode.png'
     }
   },
   computed: {
     ...mapState({
-      user: state => state.login.user,
-      isLogin: state => state.login.isLogin
+      user: state => state.login.user
     })
   },
   methods: {
     ...mapActions([
-      'updateLoginState', 'setUser'
+      'setUser'
     ]),
     check () {
       if(!this.username) {
-        this.$message({
-          message: '请填写您的用户名',
-          type: 'warning'
-        });
+        this.showMsg('请填写您的用户名');
         return
       }
       if(!this.password) {
-        this.$message({
-          message: '请输入密码',
-          type: 'warning'
-        });
+        this.showMsg('请输入密码');
         return
       }
       this.login()
@@ -58,17 +53,26 @@ export default {
         username: this.username,
         password: this.password
       })
-      console.log("login data", data);
-
       if(data&& data.success){
         this.userInfo = data.user;
-        this.updateLoginState(true); // 更改用户登录状态
         this.setUser(data.user); // 存储用户信息
         this.$router.replace({  // 跳转到个人中心
           name: 'user'
         });
       }
-    }
+    },
+    jumpPage(name) {
+      this.$router.replace({
+        name: name
+      })
+    },
+    // 显示弹框
+    showMsg (msg) {
+      this.$message({
+        message: msg,
+        type: 'warning'
+      });
+    },
   },
 }
 </script>

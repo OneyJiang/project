@@ -6,11 +6,11 @@
         <p>{{ user.nickname }}</p>
       </div>
       <ul>
-        <li>
-          <router-link to="/mall" class="router-link">积分商城</router-link>
-        </li>
-        <li>
+        <li :style="{background: routeName=='user'?'rgba(122,98,216,0.5)':'none'}">
           <router-link to="/user" class="router-link">个人中心</router-link>
+        </li>
+        <li :style="{background: routeName=='mall'?'rgba(122,98,216,0.5)':'none'}">
+          <router-link to="/mall" class="router-link">积分商城</router-link>
         </li>
         <li @click="quit">退出</li>
       </ul>
@@ -23,8 +23,6 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import _ from "lodash";
-import { getStorage } from "../util/common";
 export default {
   name: "Home",
   data() {
@@ -32,85 +30,14 @@ export default {
   },
   computed: {
     ...mapState({
-      user: (state) => state.login.user,
+      user: state => state.login.user,
     }),
-  },
-  created() {
-    this.getUserInfo();
-
-    // this.getExchangedRecord();
-
-    // this.changePassword();
-
-    // this.getShopList();
-
-    // this.insertShopItem();
-
-    // this.updateShopItem();
-
-    // this.deleteShopItem();
+    routeName () {
+      return this.$route.name
+    }
   },
   methods: {
     ...mapActions(["logout"]),
-
-    // 获取用户信息
-    async getUserInfo() {
-      await this.yGet("/user/userinfo", {
-        params: {
-          id: _.get(getStorage("user"), "_id"),
-        },
-      });
-    },
-
-    // 兑换记录
-    // async getExchangedRecord () {
-    //   let res = await this.yGet('shop/exchangedRecord',{
-    //     params:{
-    //       id: _.get(getStorage('user'),'_id')
-    //     }
-    //   })
-    //   console.log(res);
-    // },
-
-    // 修改密码
-    async changePassword() {
-      const res = await this.yPut("user/changePassword", {
-        oldPassword: "banyuan123",
-        newPassword: "banyuan223",
-      });
-      console.log(res);
-    },
-
-    // admin 获取商品列表
-    async getShopList() {
-      await this.yGet("/admin/shopList", {});
-    },
-
-    // admin 加入商品
-    async insertShopItem() {
-      await this.yPost("/admin/shopItem", {
-        name: "测试商品",
-        price: 100,
-      });
-    },
-
-    // admin 更新商品
-    async updateShopItem() {
-      await this.yPut("/admin/shopItem", {
-        data: {
-          _id: "5f69599d0023164a8b9f3ee2",
-          name: "测试商品",
-          price: 10,
-        },
-      });
-    },
-
-    // admin 删除商品
-    async deleteShopItem() {
-      await this.yDel("/admin/shopItem", {
-        id: "5f69599d0023164a8b9f3ee2",
-      });
-    },
 
     /** 退出 */
     async quit() {
@@ -131,7 +58,7 @@ export default {
   font-size: 0;
 }
 .slide-main {
-  width: 300px;
+  width: 240px;
   background: #333;
   display: inline-block;
   vertical-align: top;
@@ -179,6 +106,6 @@ export default {
   vertical-align: top;
   height: 100%;
   width: 100%;
-  padding-left: 300px;
+  padding-left: 240px;
 }
 </style>

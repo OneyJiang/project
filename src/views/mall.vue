@@ -5,7 +5,8 @@
     </div>
     <div class="my-integral">
       <h2>当前积分</h2>
-      <h3>{{ user.integration }}</h3>
+      <!-- <h3>{{ user.integration }}</h3> -->
+      <h3>{{ jifen }}</h3>
     </div>
     <div class="pro-main">
       <h1>商品列表</h1>
@@ -29,14 +30,24 @@ export default {
   },
   data () {
     return {
-      list: [{},{},{},{}]
-
+      list: [] // 商品列表
     }
   },
   computed: {
     ...mapState({
-      "user": state=>state.login.user
+      // "user": state => state.login.user,
+      "jifen": state => state.login.user.integration
     })
+  },
+  watch: {
+    jifen: {
+      handler(newV) {
+        console.log('user值', newV);
+        console.log('user值', newV.integration);
+      },
+      deep: true,
+      immediate: true
+    }
   },
   mounted() {
     this.getList();
@@ -51,19 +62,18 @@ export default {
       }
     },
     async change (data) {
-      console.log('exchange', data);
-      // const res = await this.yPut('shop/exchange', {
-      //     id: data.item._id,
-      // });
-      // console.log(res);
-      // if (res) {
-      //   this.$message({
-      //     message: '恭喜你，兑换成功',
-      //     type: 'success',
-      //     offset: '150'
-      //   });
-      // }
-      this.setUser('getUserInfo');
+      const res = await this.yPut('shop/exchange', {
+          id: data.item._id,
+      });
+      console.log(res);
+      if (res) {
+        this.setUser('getUserInfo');
+        this.$message({
+          message: '恭喜你，兑换成功',
+          type: 'success',
+          offset: '150'
+        })
+      }
     }
   }
 }
@@ -83,7 +93,7 @@ export default {
     box-shadow: 5px 6px 4px rgba(213,209,209,.5);
     position: fixed;
     top: 0;
-    left: 300px;
+    left: 240px;
     right: 0;
     z-index: 9999;
     p{
